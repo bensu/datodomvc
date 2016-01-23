@@ -2,6 +2,8 @@
     (:require [cljs.core.async :as async :refer [put! chan <!]]
               [datascript :as d]
               [dato.lib.core :as dato]
+              [dato.lib.controller :as con]
+              [dato.db.utils :as dsu]
               [dato.lib.db :as db]
               [datodomvc.client.components.root :as com-root]
               [datodomvc.client.routes :as routes]
@@ -64,7 +66,6 @@
          (go
            ;; Wait until we have the schema and session-id
            (let [[bootstrap-success? session-id] (<! dato-take)
-                  _ (println "it died")
                  {:keys [r-qes-by]}              @(:ss dato)]
              (let [router (routes/make-router dato)]
                (r-qes-by {:name :find-tasks
@@ -73,10 +74,20 @@
                (dato/start-loop! dato {:root container
                                        :router router}))))
          ;; Listen to all transactions
-         (let [dato-take (async/chan)]
+         (let [dato-take (async/chan)
+               f (fn [db]
+                   (let [tasks (dsu/qes-by db :task/title)]
+                     (println "tasks:" (map #(into {:db/id (:db/id %)} %) tasks))
+                     (count tasks)))]
            (async/tap (get-in dato [:comms :dato-mult]) dato-take)
-           (println (get-in dato [:comms :dato-mult]))
-           (go-loop []
-             (println "transaction?" (<! dato-take))
-             (recur))))
+           (go-loop [db @(:conn dato)]
+             (let [payload (<! dato-take)]
+               (if (vector? payload)
+                 (recur db)
+                 (recur (if-let [tx-data (get-in payload [:data :tx])]
+                          (let [db' (d/db-with db tx-data)]
+                            (println tx-data)
+                            (println "f" (f db'))
+                            db')
+                          db)))))))
        app-root))))
