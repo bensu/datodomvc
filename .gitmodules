@@ -3,7 +3,7 @@
 	url = git@github.com:sgrove/datascript.git
 [submodule "vendor/dato"]
 	path = vendor/dato
-	url = git@github.com:sgrove/dato.git
+	url = git@github.com:bensu/dato.git
 [submodule "vendor/garden"]
 	path = vendor/garden
 	url = git@github.com:sgrove/garden.git

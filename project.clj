@@ -90,7 +90,7 @@
                                               :pretty-print  true
                                               :preamble      ["react/react.js"]
                                               :externs       ["react/externs/react.js"]
-                                              :source-map    true
+                                              ;; :source-map    true
                                               :verbose       true
                                               :warnings      {:single-segment-namespace false}}}
                               {:id           "pseudo"
