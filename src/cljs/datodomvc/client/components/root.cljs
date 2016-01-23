@@ -152,23 +152,23 @@
                             :on-change   #(transact! :task-title-edited [{:db/id      (:db/id task)
                                                                           :task/title (.. % -target -value)}] {:tx/persist? true})}]]))]
          [:footer.footer
-          [:span.todo-count [:strong (count active-tasks)] " items left"] 
+          [:span.todo-count [:strong (count active-tasks)] " items left"]
           [:ul.filters
-           [:li 
+           [:li
             [:a {:href     (routes/url-for :tasks/all)
                  :class    (when (or (= :all task-filter) (not task-filter)) "selected")
                  :on-click (fn [event]
                              (kill! event)
                              (transact! :filter-updated [{:db/id               (:db/id session)
                                                           :session/task-filter :all}]))} "All"]]
-           [:li 
+           [:li
             [:a {:href     (routes/url-for :tasks/active)
                  :class    (when (= :active task-filter) "selected")
                  :on-click (fn [event]
                              (kill! event)
                              (transact! :filter-updated [{:db/id               (:db/id session)
                                                           :session/task-filter :active}]))} "Active"]]
-           [:li 
+           [:li
             [:a {:href     (routes/url-for :tasks/completed)
                  :class    (when (= :completed task-filter) "selected")
                  :on-click (fn [event]
@@ -180,10 +180,10 @@
              {:on-click #(transact! :completed-tasks-cleared (->> all-tasks
                                                                   (filter :task/completed?)
                                                                   (mapv (fn [task] [:db.fn/retractEntity (:db/id task)]))) {:tx/persist? true})}
-             "Clear completed"])]] 
+             "Clear completed"])]]
         [:footer.info
-         [:p "Double-click to edit a todo"] 
-         [:p "Created by " 
+         [:p "Double-click to edit a todo"]
+         [:p "Created by "
           [:a {:href "https://twitter.com/sgrove"} "Sean Grove"]]
-         [:p "Part of " 
+         [:p "Part of "
           [:a {:href "http://todomvc.com"} "TodoMVC"]]]]))))

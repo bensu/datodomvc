@@ -46,7 +46,7 @@
    (js/console.log "Installing in " root-node)
    (let [container (utils/sel1 root-node "div.app-instance")
          dato      (:dato @state)
-         dato-ch   (get-in dato [:comms :dato])
+         dato-take (get-in dato [:comms :dato-take])
          conn      (get-in dato [:conn])
          cast!     (get-in dato [:api :cast!])]
      (let [app-root (om/root com-root/root-com state
@@ -63,12 +63,20 @@
          (dato/bootstrap! dato)
          (go
            ;; Wait until we have the schema and session-id
-           (let [[bootstrap-success? session-id] (<! dato-ch)
+           (let [[bootstrap-success? session-id] (<! dato-take)
+                  _ (println "it died")
                  {:keys [r-qes-by]}              @(:ss dato)]
              (let [router (routes/make-router dato)]
                (r-qes-by {:name :find-tasks
                           :a    :dato/type
                           :v    :datodomvc.types/task})
                (dato/start-loop! dato {:root container
-                                       :router router})))))
+                                       :router router}))))
+         ;; Listen to all transactions
+         (let [dato-take (async/chan)]
+           (async/tap (get-in dato [:comms :dato-mult]) dato-take)
+           (println (get-in dato [:comms :dato-mult]))
+           (go-loop []
+             (println "transaction?" (<! dato-take))
+             (recur))))
        app-root))))

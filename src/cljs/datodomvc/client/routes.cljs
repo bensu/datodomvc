@@ -31,7 +31,7 @@
    (let [args (->> args
                    (mapcat (fn [[k v]]
                              [k (cond
-                                  (com.cognitect.transit.types/isUUID v)      (cljs.core.UUID. (str v))
+                                  (ty/isUUID v)      (cljs.core.UUID. (str v))
                                   (instance? datascript.impl.entity/Entity v) (dsu/touch+ v)
                                   :else                                       v)]))
                    vec)]
