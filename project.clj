@@ -7,7 +7,8 @@
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
 
   :repositories {"my.datomic.com" {:url   "https://my.datomic.com/repo"
-                                   :creds :gpg}}
+                                   :username ~(System/getenv "DATOMIC_USERNAME")
+                                   :password ~(System/getenv "DATOMIC_PASSPHRASE")}}
   :plugins [[lein-cljsbuild "1.0.6" :exclusions [org.clojure/clojurescript]]
             [lein-environ "1.0.0"]
             [lein-less "1.7.5"]
